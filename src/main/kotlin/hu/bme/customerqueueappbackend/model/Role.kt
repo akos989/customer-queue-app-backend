@@ -13,7 +13,7 @@ class Role(
 
     @Column(nullable = false, unique = true)
     @Enumerated(EnumType.STRING)
-    var name: RoleType = RoleType.EMPLOYEE
+    var name: RoleType = RoleType.ADMIN
 ) {
     val grantedAuthority: SimpleGrantedAuthority
         get() = SimpleGrantedAuthority("ROLE_$name")

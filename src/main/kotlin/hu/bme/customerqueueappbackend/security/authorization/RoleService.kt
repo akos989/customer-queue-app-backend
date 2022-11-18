@@ -8,10 +8,6 @@ import org.springframework.stereotype.Service
 class RoleService(
     private val roleRepository: RoleRepository
 ) {
-    val employee: Role by lazy {
-        roleRepository.findFirstByName(RoleType.EMPLOYEE)!!
-    }
-
     val admin: Role by lazy {
         roleRepository.findFirstByName(RoleType.ADMIN)!!
     }
