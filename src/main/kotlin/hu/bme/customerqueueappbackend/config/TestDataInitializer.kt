@@ -1,10 +1,7 @@
 package hu.bme.customerqueueappbackend.config
 
 import hu.bme.customerqueueappbackend.model.*
-import hu.bme.customerqueueappbackend.repository.CustomerServiceRepository
-import hu.bme.customerqueueappbackend.repository.OwnerRepository
-import hu.bme.customerqueueappbackend.repository.ServiceTypeRepository
-import hu.bme.customerqueueappbackend.repository.UserRepository
+import hu.bme.customerqueueappbackend.repository.*
 import hu.bme.customerqueueappbackend.security.authorization.RoleService
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
@@ -18,7 +15,7 @@ import java.util.UUID
 class TestDataInitializer(
     private val serviceTypeRepository: ServiceTypeRepository,
     private val userRepository: UserRepository,
-    private val ownerRepository: OwnerRepository,
+    private val customerTicketRepository: CustomerTicketRepository,
     private val customerServiceRepository: CustomerServiceRepository,
     private val roleService: RoleService,
     private val passwordEncoder: PasswordEncoder
@@ -31,7 +28,7 @@ class TestDataInitializer(
         )
         val customerServices = customerServiceRepository.saveAll(
             listOf(
-                CustomerService(name = "Telekom Alle", owner = owners[0])
+                CustomerService(id = UUID.fromString("00000000-80ed-4d57-a626-c2d5464a522a"), name = "Telekom Alle", owner = owners[0])
             )
         )
         userRepository.saveAll(
@@ -44,15 +41,25 @@ class TestDataInitializer(
                 Admin(email = "admin2@user.com", password = passwordEncoder.encode("password"), roles = mutableSetOf(roleService.admin), customerService = customerServices[0])
             )
         )
-//        serviceTypeRepository.saveAll(
-//            listOf(
-//                ServiceType(name = "Upload balance", handleTime = 11),
-//                ServiceType(name = "Check balance", handleTime = 4),
-//                ServiceType(name = "New customer", handleTime = 30),
-//                ServiceType(name = "Modify billing address", handleTime = 19),
-//                ServiceType(name = "Close account", handleTime = 23),
-//                ServiceType(name = "Random questions", handleTime = 5),
-//            )
-//        )
+        val serviceTypes = serviceTypeRepository.saveAll(
+            listOf(
+                ServiceType(name = "Upload balance", handleTime = 11, customerService = customerServices[0]),
+                ServiceType(name = "Check balance", handleTime = 4, customerService = customerServices[0]),
+                ServiceType(name = "New customer", handleTime = 30, customerService = customerServices[0]),
+                ServiceType(name = "Modify billing address", handleTime = 19, customerService = customerServices[0]),
+                ServiceType(name = "Close account", handleTime = 23, customerService = customerServices[0]),
+                ServiceType(name = "Random questions", handleTime = 5, customerService = customerServices[0]),
+            )
+        )
+        customerTicketRepository.saveAll(
+            listOf(
+                CustomerTicket(serviceType = serviceTypes[1], customerService = customerServices[0], waitingTime = 0, waitingPeopleNumber = 0),
+                CustomerTicket(serviceType = serviceTypes[0], customerService = customerServices[0], waitingTime = 11, waitingPeopleNumber = 1),
+                CustomerTicket(serviceType = serviceTypes[2], customerService = customerServices[0], waitingTime = 15, waitingPeopleNumber = 2),
+                CustomerTicket(serviceType = serviceTypes[3], customerService = customerServices[0], waitingTime = 45, waitingPeopleNumber = 3),
+                CustomerTicket(serviceType = serviceTypes[4], customerService = customerServices[0], waitingTime = 64, waitingPeopleNumber = 4),
+                CustomerTicket(serviceType = serviceTypes[5], customerService = customerServices[0], waitingTime = 87, waitingPeopleNumber = 5)
+            )
+        )
     }
 }

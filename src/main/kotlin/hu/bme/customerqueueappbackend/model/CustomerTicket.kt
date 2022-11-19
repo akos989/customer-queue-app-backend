@@ -13,6 +13,12 @@ class CustomerTicket(
     @Column
     val startTimeStamp: Date = Date(),
 
+    @Column
+    var waitingTime: Int = 0,
+
+    @Column
+    var waitingPeopleNumber: Int = 0,
+
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "serviceTypeId", referencedColumnName = "id")
     val serviceType: ServiceType = ServiceType(),

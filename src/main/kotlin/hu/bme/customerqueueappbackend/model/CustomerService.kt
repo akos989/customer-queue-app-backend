@@ -1,12 +1,8 @@
 package hu.bme.customerqueueappbackend.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
-import javax.persistence.OneToMany
+import javax.persistence.*
 
 @Entity
 class CustomerService(
@@ -18,7 +14,7 @@ class CustomerService(
     val name: String = "",
 
     @OneToMany(mappedBy = "customerService")
-    val waitingTickets: List<CustomerTicket> = listOf(),
+    val waitingTickets: MutableList<CustomerTicket> = mutableListOf(),
 
     @OneToMany(mappedBy = "customerService")
     val employees: List<Employee> = listOf(),
@@ -26,7 +22,7 @@ class CustomerService(
     @OneToMany(mappedBy = "customerService")
     val admins: List<Admin> = listOf(),
 
-    @OneToMany(mappedBy = "customerService")
+    @OneToMany(mappedBy = "customerService", fetch = FetchType.EAGER)
     val serviceTypes: List<ServiceType> = listOf(),
 
     @ManyToOne

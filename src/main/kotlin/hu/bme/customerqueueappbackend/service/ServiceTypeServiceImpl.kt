@@ -11,12 +11,15 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 import java.util.*
+import javax.transaction.Transactional
 
 @Service
 class ServiceTypeServiceImpl (
     private val serviceTypeRepository: ServiceTypeRepository,
     private val mapper: ModelMapper
 ): ServiceTypeService {
+
+    @Transactional
     override fun saveServiceType(createServiceTypeRequest: CreateServiceTypeRequest): ServiceTypeDto {
         return ServiceTypeDto().run {
             val serviceType = ServiceType(name = createServiceTypeRequest.name, handleTime = createServiceTypeRequest.handleTime)
@@ -31,6 +34,7 @@ class ServiceTypeServiceImpl (
         return serviceTypes.toDto(mapper)
     }
 
+    @Transactional
     override fun deleteServiceType(id: UUID) {
         val serviceType = findServiceTypeById(id)
         serviceTypeRepository.delete(serviceType)

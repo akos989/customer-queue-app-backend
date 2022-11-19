@@ -29,4 +29,14 @@ class ExceptionHandler: ResponseEntityExceptionHandler() {
         )
         return handleExceptionInternal(ex, body, HttpHeaders(), HttpStatus.BAD_REQUEST, request)
     }
+
+    @ExceptionHandler(CannotDelayTicketException::class)
+    protected fun handleCannotDelayTicket(ex: RuntimeException, request: WebRequest): ResponseEntity<Any> {
+        val body = ErrorCode(
+            error = ex.javaClass.name,
+            httpStatus = HttpStatus.BAD_REQUEST,
+            message = ex.localizedMessage
+        )
+        return handleExceptionInternal(ex, body, HttpHeaders(), HttpStatus.BAD_REQUEST, request)
+    }
 }

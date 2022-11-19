@@ -1,5 +1,6 @@
 package hu.bme.customerqueueappbackend.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import java.util.UUID
 import javax.persistence.*
 
@@ -15,6 +16,7 @@ class ServiceType(
     @Column(nullable = false)
     var handleTime: Int = 0,
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "customerServiceId", nullable = false)
     val customerService: CustomerService = CustomerService()
