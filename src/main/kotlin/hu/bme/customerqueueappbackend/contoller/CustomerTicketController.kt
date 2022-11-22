@@ -25,7 +25,7 @@ class CustomerTicketController(
 
     @DeleteMapping("/{id}")
     fun deleteTicket(@PathVariable id: UUID): ResponseEntity<Unit> {
-        // Todo: implement
+        customerTicketService.deleteTicket(id)
         return ResponseEntity.ok(Unit)
     }
 }

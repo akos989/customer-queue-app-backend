@@ -12,7 +12,7 @@ class Employee(
     roles: MutableSet<Role> = hashSetOf(),
 
     @Column
-    val helpDeskNumber: Int = 0,
+    var helpDeskNumber: Int = 0,
 
     @ManyToOne
     @JoinColumn(name = "customerServiceId", nullable = true)

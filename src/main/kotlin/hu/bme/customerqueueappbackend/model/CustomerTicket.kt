@@ -11,13 +11,16 @@ class CustomerTicket(
     val id: UUID = UUID.randomUUID(),
 
     @Column
-    val startTimeStamp: Date = Date(),
+    var handleStartTimeStamp: Date? = null,
 
     @Column
-    var waitingTime: Int = 0,
+    var callTime: Date? = null,
 
     @Column
     var waitingPeopleNumber: Int = 0,
+
+    @Column
+    var handleDesk: Int = 0,
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "serviceTypeId", referencedColumnName = "id")

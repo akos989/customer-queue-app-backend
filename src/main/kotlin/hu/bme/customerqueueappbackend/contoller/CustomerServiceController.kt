@@ -1,6 +1,7 @@
 package hu.bme.customerqueueappbackend.contoller
 
 import hu.bme.customerqueueappbackend.dto.CustomerServiceDto
+import hu.bme.customerqueueappbackend.dto.CustomerTicketDto
 import hu.bme.customerqueueappbackend.service.CustomerServiceService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -18,4 +19,8 @@ class CustomerServiceController(
     @GetMapping("/{id}")
     fun getCustomerService(@PathVariable id: UUID): ResponseEntity<CustomerServiceDto>
         = ResponseEntity.ok(customerServiceService.getCustomerService(id))
+
+    @GetMapping("/{id}/nextTicket")
+    fun getNextTicket(@PathVariable id: UUID, @RequestParam employeeId: UUID): ResponseEntity<CustomerTicketDto>
+        = ResponseEntity.ok(customerServiceService.getNextTicket(id, employeeId))
 }

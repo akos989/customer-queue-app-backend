@@ -53,12 +53,12 @@ class TestDataInitializer(
         )
         customerTicketRepository.saveAll(
             listOf(
-                CustomerTicket(serviceType = serviceTypes[1], customerService = customerServices[0], waitingTime = 0, waitingPeopleNumber = 0),
-                CustomerTicket(serviceType = serviceTypes[0], customerService = customerServices[0], waitingTime = 11, waitingPeopleNumber = 1),
-                CustomerTicket(serviceType = serviceTypes[2], customerService = customerServices[0], waitingTime = 15, waitingPeopleNumber = 2),
-                CustomerTicket(serviceType = serviceTypes[3], customerService = customerServices[0], waitingTime = 45, waitingPeopleNumber = 3),
-                CustomerTicket(serviceType = serviceTypes[4], customerService = customerServices[0], waitingTime = 64, waitingPeopleNumber = 4),
-                CustomerTicket(serviceType = serviceTypes[5], customerService = customerServices[0], waitingTime = 87, waitingPeopleNumber = 5)
+                CustomerTicket(serviceType = serviceTypes[0], customerService = customerServices[0], callTime = null, waitingPeopleNumber = 0),
+                CustomerTicket(serviceType = serviceTypes[1], customerService = customerServices[0], callTime = null, waitingPeopleNumber = 1),
+                CustomerTicket(serviceType = serviceTypes[2], customerService = customerServices[0], callTime = null, waitingPeopleNumber = 2),
+                CustomerTicket(serviceType = serviceTypes[0], customerService = customerServices[0], callTime = null, waitingPeopleNumber = 3),
+                CustomerTicket(serviceType = serviceTypes[4], customerService = customerServices[0], callTime = null, waitingPeopleNumber = 4),
+                CustomerTicket(serviceType = serviceTypes[5], customerService = customerServices[0], callTime = null, waitingPeopleNumber = 5)
             )
         )
     }

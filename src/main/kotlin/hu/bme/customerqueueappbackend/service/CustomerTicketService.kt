@@ -7,4 +7,6 @@ interface CustomerTicketService {
     fun create(serviceTypeId: UUID): CustomerTicketDto
 
     fun delayTicket(id: UUID, minutes: Int): CustomerTicketDto
+
+    fun deleteTicket(id: UUID)
 }

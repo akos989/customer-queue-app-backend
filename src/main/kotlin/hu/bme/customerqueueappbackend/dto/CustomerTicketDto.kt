@@ -1,10 +1,11 @@
 package hu.bme.customerqueueappbackend.dto
 
-import java.util.UUID
+import java.util.*
 
 class CustomerTicketDto (
     val id: UUID = UUID.randomUUID(),
-    val customerServiceName: String = "",
+    val serviceTypeName: String = "",
     val waitingPeopleNumber: Int = 0,
-    val waitingTime: Int = 0
+    val callTime: Date? = null,
+    val handleDesk: Int = 0
 )
