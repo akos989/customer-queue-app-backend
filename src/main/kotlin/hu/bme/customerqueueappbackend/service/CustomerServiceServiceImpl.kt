@@ -2,15 +2,12 @@ package hu.bme.customerqueueappbackend.service
 
 import hu.bme.customerqueueappbackend.dto.CustomerServiceDto
 import hu.bme.customerqueueappbackend.dto.CustomerTicketDto
-import hu.bme.customerqueueappbackend.dto.ServiceTypeDto
-import hu.bme.customerqueueappbackend.dto.request.CreateServiceTypeRequest
+import hu.bme.customerqueueappbackend.dto.UserDto
 import hu.bme.customerqueueappbackend.model.CustomerService
-import hu.bme.customerqueueappbackend.model.CustomerTicket
 import hu.bme.customerqueueappbackend.model.Employee
-import hu.bme.customerqueueappbackend.model.ServiceType
+import hu.bme.customerqueueappbackend.repository.AdminRepository
 import hu.bme.customerqueueappbackend.repository.CustomerServiceRepository
 import hu.bme.customerqueueappbackend.repository.EmployeeRepository
-import hu.bme.customerqueueappbackend.repository.ServiceTypeRepository
 import hu.bme.customerqueueappbackend.util.extensions.toDto
 import org.modelmapper.ModelMapper
 import org.springframework.data.repository.findByIdOrNull
@@ -24,14 +21,24 @@ import javax.transaction.Transactional
 class CustomerServiceServiceImpl (
     private val customerServiceRepository: CustomerServiceRepository,
     private val employeeRepository: EmployeeRepository,
+    private val adminRepository: AdminRepository,
     private val mapper: ModelMapper
 ): CustomerServiceService {
     override fun getCustomerService(id: UUID): CustomerServiceDto {
         val customerService = findCustomerServiceById(id)
+        // Navigation properties of employees and admins were removed from CustomerService class. If you want to fetch the admin and employees belonging to a CustomerService use:
+        // EmployeeRepository.findByCustomerService() and AdminRepository.findByCustomerService()
+        val employeeEntities = employeeRepository.findByCustomerService(customerService)
+        val adminEntities = adminRepository.findByCustomerService(customerService)
+        val adminDtoList: List<UserDto> = adminEntities.toDto(mapper)
+        val employeeDtoList: List<UserDto> = employeeEntities.toDto(mapper)
+
         val customerServiceDto: CustomerServiceDto = customerService.toDto(mapper)
         customerServiceDto.run {
             waitingPeople = customerService.waitingTickets.count()
             waitingTime = customerService.waitingTickets.sumOf { it.serviceType.handleTime }
+            admins = adminDtoList
+            employees = employeeDtoList
         }
         return customerServiceDto
     }
@@ -43,7 +50,8 @@ class CustomerServiceServiceImpl (
             .filter { it.handleStartTimeStamp == null }
             .minByOrNull { it.waitingPeopleNumber }
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "No next ticket")
-        val employeeDeskNumber = findEmployeeById(employeeId).helpDeskNumber
+        val employee = findEmployeeById(employeeId)
+        val employeeDeskNumber = employee.helpDeskNumber
         nextTicket.handleStartTimeStamp = Date()
         nextTicket.handleDesk = employeeDeskNumber
         return nextTicket.toDto(mapper)

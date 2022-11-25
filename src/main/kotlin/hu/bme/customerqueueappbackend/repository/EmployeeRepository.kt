@@ -11,5 +11,7 @@ interface EmployeeRepository: JpaRepository<Employee, UUID> {
     fun findFirstByCustomerServiceOrderByHelpDeskNumberDesc(customerService: CustomerService): Employee
 
     fun findByEmail(email: String): Employee?
+
+    fun findByCustomerService(customerService: CustomerService): List<Employee>
 }
 
