@@ -3,12 +3,10 @@ package hu.bme.customerqueueappbackend.service
 import hu.bme.customerqueueappbackend.dto.CustomerServiceDto
 import hu.bme.customerqueueappbackend.dto.CustomerTicketDto
 import hu.bme.customerqueueappbackend.dto.UserDto
+import hu.bme.customerqueueappbackend.dto.request.CreateCustomerServiceRequest
 import hu.bme.customerqueueappbackend.model.CustomerService
 import hu.bme.customerqueueappbackend.model.Employee
-import hu.bme.customerqueueappbackend.repository.AdminRepository
-import hu.bme.customerqueueappbackend.repository.CustomerServiceRepository
-import hu.bme.customerqueueappbackend.repository.CustomerTicketRepository
-import hu.bme.customerqueueappbackend.repository.EmployeeRepository
+import hu.bme.customerqueueappbackend.repository.*
 import hu.bme.customerqueueappbackend.util.extensions.toDto
 import org.modelmapper.ModelMapper
 import org.springframework.data.repository.findByIdOrNull
@@ -25,8 +23,19 @@ class CustomerServiceServiceImpl (
     private val adminRepository: AdminRepository,
     private val customerTicketRepository: CustomerTicketRepository,
     private val serviceTypeRepository: ServiceTypeService,
+    private val ownerRepository: OwnerRepository,
     private val mapper: ModelMapper
 ): CustomerServiceService {
+    @Transactional
+    override fun saveCustomerService(createCustomerServiceRequest: CreateCustomerServiceRequest): CustomerServiceDto {
+        val owner = ownerRepository.findByIdOrNull(createCustomerServiceRequest.ownerId) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Owner not found")
+        val customerService = CustomerService(name = createCustomerServiceRequest.name, owner = owner)
+
+        customerServiceRepository.save(customerService)
+
+        return customerService.toDto(mapper)
+    }
+
     override fun getCustomerService(id: UUID): CustomerServiceDto {
         val customerService = findCustomerServiceById(id)
         // Navigation properties of employees and admins were removed from CustomerService class. If you want to fetch the admin and employees belonging to a CustomerService use:
