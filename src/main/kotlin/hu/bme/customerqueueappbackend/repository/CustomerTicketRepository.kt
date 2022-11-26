@@ -14,4 +14,6 @@ interface CustomerTicketRepository: JpaRepository<CustomerTicket, UUID> {
     fun findAllByCustomerServiceAndHandleStartTimeStampIsNotNull(customerService: CustomerService): List<CustomerTicket>
 
     fun findFirstByServiceType(serviceType: ServiceType): CustomerTicket?
+
+    fun findFirstByCustomerService(customerService: CustomerService): CustomerTicket?
 }

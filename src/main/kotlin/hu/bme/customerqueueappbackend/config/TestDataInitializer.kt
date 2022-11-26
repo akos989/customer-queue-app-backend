@@ -25,12 +25,14 @@ class TestDataInitializer(
     override fun run(args: ApplicationArguments?) {
         val owners = ownerRepository.saveAll(
             listOf(
-                Owner(email = "owner1@user.com", password = passwordEncoder.encode("password"), roles = mutableSetOf(roleService.owner))
+                Owner(email = "owner1@user.com", password = passwordEncoder.encode("password"), roles = mutableSetOf(roleService.owner)),
+                Owner(email = "owner2@user.com", password = passwordEncoder.encode("password"), roles = mutableSetOf(roleService.owner))
             )
         )
         val customerServices = customerServiceRepository.saveAll(
             listOf(
-                CustomerService(id = UUID.fromString("00000000-80ed-4d57-a626-c2d5464a522a"), name = "Telekom Alle", owner = owners[0])
+                CustomerService(id = UUID.fromString("00000000-80ed-4d57-a626-c2d5464a522a"), name = "Telekom Alle", owner = owners[0]),
+                CustomerService(id = UUID.fromString("00000000-80ed-4d57-a626-c2d5464a522b"), name = "Vodafone Alle", owner = owners[1])
             )
         )
         adminRepository.saveAll(

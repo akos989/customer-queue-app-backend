@@ -7,6 +7,7 @@ import hu.bme.customerqueueappbackend.model.CustomerService
 import hu.bme.customerqueueappbackend.model.Employee
 import hu.bme.customerqueueappbackend.repository.AdminRepository
 import hu.bme.customerqueueappbackend.repository.CustomerServiceRepository
+import hu.bme.customerqueueappbackend.repository.CustomerTicketRepository
 import hu.bme.customerqueueappbackend.repository.EmployeeRepository
 import hu.bme.customerqueueappbackend.util.extensions.toDto
 import org.modelmapper.ModelMapper
@@ -22,6 +23,8 @@ class CustomerServiceServiceImpl (
     private val customerServiceRepository: CustomerServiceRepository,
     private val employeeRepository: EmployeeRepository,
     private val adminRepository: AdminRepository,
+    private val customerTicketRepository: CustomerTicketRepository,
+    private val serviceTypeRepository: ServiceTypeService,
     private val mapper: ModelMapper
 ): CustomerServiceService {
     override fun getCustomerService(id: UUID): CustomerServiceDto {
@@ -41,6 +44,38 @@ class CustomerServiceServiceImpl (
             employees = employeeDtoList
         }
         return customerServiceDto
+    }
+
+    @Transactional
+    override fun deleteCustomerService(id: UUID) {
+        val customerService = findCustomerServiceById(id)
+
+        if (customerTicketRepository.findFirstByCustomerService(customerService) == null) {
+            // delete related employees
+            val employees = employeeRepository.findByCustomerService(customerService)
+            for (employee in employees) {
+                println(employee)
+                employeeRepository.delete(employee)
+            }
+
+            // delete related admins
+            val admins = adminRepository.findByCustomerService(customerService)
+            for (admin in admins) {
+                println(admin)
+                adminRepository.delete(admin)
+            }
+
+            // delete related service types
+            for (serviceType in customerService.serviceTypes) {
+                println(serviceType)
+                serviceTypeRepository.deleteServiceType(serviceType.id)
+            }
+
+            // delete the customer service itself
+            customerServiceRepository.delete(customerService)
+        } else {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "At least one ticket has not been completed in this customer service")
+        }
     }
 
     @Transactional

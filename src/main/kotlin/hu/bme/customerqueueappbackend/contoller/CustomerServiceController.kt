@@ -20,6 +20,10 @@ class CustomerServiceController(
     fun getCustomerService(@PathVariable id: UUID): ResponseEntity<CustomerServiceDto>
         = ResponseEntity.ok(customerServiceService.getCustomerService(id))
 
+    @DeleteMapping("/{id}")
+    fun delete(@PathVariable id: UUID): ResponseEntity<Unit>
+        = ResponseEntity.ok(customerServiceService.deleteCustomerService(id))
+
     @GetMapping("/{id}/nextTicket")
     fun getNextTicket(@PathVariable id: UUID, @RequestParam employeeId: UUID): ResponseEntity<CustomerTicketDto>
         = ResponseEntity.ok(customerServiceService.getNextTicket(id, employeeId))
