@@ -6,4 +6,6 @@ import java.util.*
 interface AdminService {
 
     fun getAdmin(id: UUID): AdminDto
+
+    fun deleteAdmin(id:UUID)
 }

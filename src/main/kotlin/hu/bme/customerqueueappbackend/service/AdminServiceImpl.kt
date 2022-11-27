@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.*
+import javax.transaction.Transactional
 
 @Service
 class AdminServiceImpl (
@@ -36,6 +37,11 @@ class AdminServiceImpl (
         }
 
         return adminDto
+    }
+
+    @Transactional
+    override fun deleteAdmin(id: UUID) {
+        adminRepository.deleteById(id)
     }
 
 }

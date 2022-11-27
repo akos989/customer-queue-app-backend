@@ -20,7 +20,6 @@ class EmployeeController(
             = ResponseEntity.ok(employeeService.getEmployee(id))
 
     @DeleteMapping("/{id}")
-    //@PreAuthorize("hasRole('ADMIN')")
     fun deleteEmployee(@PathVariable id: UUID): ResponseEntity<Unit> =
         ResponseEntity.ok(employeeService.deleteEmployee(id))
 
