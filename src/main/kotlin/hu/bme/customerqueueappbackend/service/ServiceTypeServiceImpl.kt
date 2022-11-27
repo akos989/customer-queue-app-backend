@@ -6,13 +6,12 @@ import hu.bme.customerqueueappbackend.model.ServiceType
 import hu.bme.customerqueueappbackend.repository.CustomerServiceRepository
 import hu.bme.customerqueueappbackend.repository.CustomerTicketRepository
 import hu.bme.customerqueueappbackend.repository.ServiceTypeRepository
+import hu.bme.customerqueueappbackend.util.exceptions.BadRequestException
 import hu.bme.customerqueueappbackend.util.exceptions.EntityNotFoundException
 import hu.bme.customerqueueappbackend.util.extensions.toDto
 import org.modelmapper.ModelMapper
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.web.server.ResponseStatusException
 import java.util.*
 import javax.transaction.Transactional
 
@@ -41,12 +40,12 @@ class ServiceTypeServiceImpl (
 
     @Transactional
     override fun deleteServiceType(id: UUID) {
-        val serviceType = serviceTypeRepository.findByIdOrNull(id) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Service Type not found")
+        val serviceType = serviceTypeRepository.findByIdOrNull(id) ?: throw EntityNotFoundException("Service Type not found")
 
         if (customerTicketRepository.findFirstByServiceType(serviceType) == null) {
             serviceTypeRepository.delete(serviceType)
         } else {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "At least one ticket has not been completed in this service type")
+            throw BadRequestException("At least one ticket has not been completed in this service type")
         }
     }
 }

@@ -8,12 +8,11 @@ import hu.bme.customerqueueappbackend.model.CustomerService
 import hu.bme.customerqueueappbackend.model.Employee
 import hu.bme.customerqueueappbackend.repository.*
 import hu.bme.customerqueueappbackend.util.exceptions.BadRequestException
+import hu.bme.customerqueueappbackend.util.exceptions.EntityNotFoundException
 import hu.bme.customerqueueappbackend.util.extensions.toDto
 import org.modelmapper.ModelMapper
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.web.server.ResponseStatusException
 import java.util.*
 import javax.transaction.Transactional
 
@@ -29,7 +28,7 @@ class CustomerServiceServiceImpl (
 ): CustomerServiceService {
     @Transactional
     override fun saveCustomerService(createCustomerServiceRequest: CreateCustomerServiceRequest): CustomerServiceDto {
-        val owner = ownerRepository.findByIdOrNull(createCustomerServiceRequest.ownerId) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Owner not found")
+        val owner = ownerRepository.findByIdOrNull(createCustomerServiceRequest.ownerId) ?: throw EntityNotFoundException("Owner not found")
         val customerService = CustomerService(name = createCustomerServiceRequest.name, owner = owner)
 
         customerServiceRepository.save(customerService)
@@ -94,7 +93,7 @@ class CustomerServiceServiceImpl (
         val nextTicket = customerService.waitingTickets
             .filter { it.handleStartTimeStamp == null }
             .minByOrNull { it.waitingPeopleNumber }
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "No next ticket")
+            ?: throw BadRequestException("There is no next ticket")
         val employee = findEmployeeById(employeeId)
         val employeeDeskNumber = employee.helpDeskNumber
         nextTicket.handleStartTimeStamp = Date()
@@ -104,10 +103,10 @@ class CustomerServiceServiceImpl (
 
     private fun findCustomerServiceById(id: UUID): CustomerService
         = customerServiceRepository.findByIdOrNull(id)
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Customer Service not found")
+            ?: throw EntityNotFoundException("Customer Service not found")
 
     private fun findEmployeeById(id: UUID): Employee
         = employeeRepository.findByIdOrNull(id)
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found")
+            ?: throw EntityNotFoundException("Employee not found")
 
 }
