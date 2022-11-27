@@ -15,7 +15,7 @@ class OwnerServiceImpl (
     private val ownerRepository: OwnerRepository
 ): OwnerService {
 
-    override fun getOwner(id: UUID): OwnerDto? {
+    override fun getOwner(id: UUID): OwnerDto {
         val owner = ownerRepository.findByIdOrNull(id) ?: throw EntityNotFoundException("Owner was not found")
         return owner.toDto(mapper)
     }

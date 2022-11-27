@@ -15,7 +15,7 @@ class EmployeeServiceImpl (
     private val employeeRepository: EmployeeRepository
 ): EmployeeService {
 
-    override fun getEmployee(id: UUID): EmployeeDto? {
+    override fun getEmployee(id: UUID): EmployeeDto {
         val employee = employeeRepository.findByIdOrNull(id) ?: throw EntityNotFoundException("Employee was not found")
         return employee.toDto(mapper)
     }

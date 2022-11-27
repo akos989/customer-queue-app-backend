@@ -5,5 +5,5 @@ import java.util.*
 
 interface OwnerService {
 
-    fun getOwner(id: UUID): OwnerDto?
+    fun getOwner(id: UUID): OwnerDto
 }

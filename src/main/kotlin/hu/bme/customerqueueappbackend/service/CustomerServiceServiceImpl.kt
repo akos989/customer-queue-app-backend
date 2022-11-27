@@ -7,6 +7,7 @@ import hu.bme.customerqueueappbackend.dto.request.CreateCustomerServiceRequest
 import hu.bme.customerqueueappbackend.model.CustomerService
 import hu.bme.customerqueueappbackend.model.Employee
 import hu.bme.customerqueueappbackend.repository.*
+import hu.bme.customerqueueappbackend.util.exceptions.BadRequestException
 import hu.bme.customerqueueappbackend.util.extensions.toDto
 import org.modelmapper.ModelMapper
 import org.springframework.data.repository.findByIdOrNull
@@ -83,7 +84,7 @@ class CustomerServiceServiceImpl (
             // delete the customer service itself
             customerServiceRepository.delete(customerService)
         } else {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "At least one ticket has not been completed in this customer service")
+            throw BadRequestException("At least one ticket has not been completed in this customer service")
         }
     }
 

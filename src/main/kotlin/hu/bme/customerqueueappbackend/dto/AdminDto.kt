@@ -4,5 +4,5 @@ import java.util.*
 
 class AdminDto (
     val id: UUID = UUID.randomUUID(),
-    val customerService: CustomerServiceDto = CustomerServiceDto()
+    var customerService: CustomerServiceDto = CustomerServiceDto()
 )

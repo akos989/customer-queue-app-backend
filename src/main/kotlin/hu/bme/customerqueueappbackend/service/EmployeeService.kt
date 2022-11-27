@@ -5,6 +5,6 @@ import java.util.*
 
 interface EmployeeService {
 
-    fun getEmployee(id: UUID): EmployeeDto?
+    fun getEmployee(id: UUID): EmployeeDto
 
 }

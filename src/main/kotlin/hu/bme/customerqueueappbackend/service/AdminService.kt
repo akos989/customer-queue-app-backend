@@ -5,5 +5,5 @@ import java.util.*
 
 interface AdminService {
 
-    fun getAdmin(id: UUID): AdminDto?
+    fun getAdmin(id: UUID): AdminDto
 }
