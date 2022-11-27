@@ -6,9 +6,7 @@ import hu.bme.customerqueueappbackend.util.exceptions.EntityNotFoundException
 import hu.bme.customerqueueappbackend.util.extensions.toDto
 import org.modelmapper.ModelMapper
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.web.server.ResponseStatusException
 import java.util.*
 import javax.transaction.Transactional
 
@@ -17,6 +15,7 @@ class EmployeeServiceImpl (
     private val mapper: ModelMapper,
     private val employeeRepository: EmployeeRepository
 ): EmployeeService {
+
 
     override fun getEmployee(id: UUID): EmployeeDto {
         val employee = employeeRepository.findByIdOrNull(id) ?: throw EntityNotFoundException("Employee was not found")

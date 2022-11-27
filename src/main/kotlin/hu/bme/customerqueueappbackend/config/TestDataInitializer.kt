@@ -44,9 +44,9 @@ class TestDataInitializer(
 
         employeeRepository.saveAll(
             listOf(
-                Employee(email = "employee1@user.com", password = passwordEncoder.encode("password"), helpDeskNumber = 11, customerService = customerServices[0]),
-                Employee(email = "employee2@user.com", password = passwordEncoder.encode("password"), helpDeskNumber = 15, customerService = customerServices[0]),
-                Employee(email = "employee3@user.com", password = passwordEncoder.encode("password"), customerService = customerServices[0])
+                Employee(email = "employee1@user.com", password = passwordEncoder.encode("password"), helpDeskNumber = 11, customerService = customerServices[0], roles = mutableSetOf(roleService.employee)),
+                Employee(email = "employee2@user.com", password = passwordEncoder.encode("password"), helpDeskNumber = 15, customerService = customerServices[0], roles = mutableSetOf(roleService.employee)),
+                Employee(email = "employee3@user.com", password = passwordEncoder.encode("password"), customerService = customerServices[0], roles = mutableSetOf(roleService.employee))
             )
         )
         val serviceTypes = serviceTypeRepository.saveAll(

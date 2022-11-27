@@ -15,4 +15,8 @@ class RoleService(
     val owner: Role by lazy {
         roleRepository.findFirstByName(RoleType.OWNER)!!
     }
+
+    val employee: Role by lazy {
+        roleRepository.findFirstByName(RoleType.EMPLOYEE)!!
+    }
 }
