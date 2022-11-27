@@ -7,4 +7,6 @@ interface EmployeeService {
 
     fun getEmployee(id: UUID): EmployeeDto
 
+    fun deleteEmployee(id: UUID)
+
 }
