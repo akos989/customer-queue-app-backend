@@ -34,14 +34,16 @@ class CustomerTicketServiceImpl (
             serviceType = serviceType,
             customerService = customerService,
             callTime = waitingTimeCalculationService.callTimeForNewCustomerTicket(customerService),
-            waitingPeopleNumber = customerService.waitingTickets.count() - 1
+            waitingPeopleNumber = customerService.waitingTickets.count() - 1,
+            ticketNumber = (Date().time % 10000).toInt()
         )
         customerTicketRepository.save(ticket)
         return CustomerTicketDto(
             id = ticket.id,
             serviceTypeName = ticket.serviceType.name,
             callTime = ticket.callTime,
-            waitingPeopleNumber = ticket.waitingPeopleNumber
+            waitingPeopleNumber = ticket.waitingPeopleNumber,
+            ticketNumber = ticket.ticketNumber
         )
     }
 
@@ -68,7 +70,8 @@ class CustomerTicketServiceImpl (
             id = delayedTicket.id,
             serviceTypeName = delayedTicket.serviceType.name,
             callTime = delayedTicket.callTime,
-            waitingPeopleNumber = delayedTicket.waitingPeopleNumber
+            waitingPeopleNumber = delayedTicket.waitingPeopleNumber,
+            ticketNumber = delayedTicket.ticketNumber
         )
     }
 
