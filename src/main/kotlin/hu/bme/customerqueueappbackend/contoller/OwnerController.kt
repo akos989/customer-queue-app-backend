@@ -3,6 +3,7 @@ package hu.bme.customerqueueappbackend.contoller
 import hu.bme.customerqueueappbackend.dto.OwnerDto
 import hu.bme.customerqueueappbackend.service.OwnerService
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -19,6 +20,7 @@ class OwnerController(
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('OWNER')")
     fun getOwner(@PathVariable id: UUID): ResponseEntity<OwnerDto>
             = ResponseEntity.ok(ownerService.getOwner(id))
 

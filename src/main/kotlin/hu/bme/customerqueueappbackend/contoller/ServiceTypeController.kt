@@ -4,6 +4,7 @@ import hu.bme.customerqueueappbackend.dto.ServiceTypeDto
 import hu.bme.customerqueueappbackend.dto.request.CreateServiceTypeRequest
 import hu.bme.customerqueueappbackend.service.ServiceTypeService
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -23,6 +24,7 @@ class ServiceTypeController (
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN') || hasRole('OWNER')")
     fun saveServiceType(@RequestBody createServiceTypeRequest: CreateServiceTypeRequest): ResponseEntity<ServiceTypeDto> =
         ResponseEntity.ok(serviceTypeService.saveServiceType(createServiceTypeRequest))
 
@@ -31,7 +33,7 @@ class ServiceTypeController (
         ResponseEntity.ok(serviceTypeService.getServiceTypes(customerServiceId))
 
     @DeleteMapping("/{id}")
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') || hasRole('OWNER')")
     fun delete(@PathVariable id: UUID): ResponseEntity<Unit> =
         ResponseEntity.ok(serviceTypeService.deleteServiceType(id))
 }

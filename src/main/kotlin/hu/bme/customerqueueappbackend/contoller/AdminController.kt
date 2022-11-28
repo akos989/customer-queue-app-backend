@@ -3,6 +3,7 @@ package hu.bme.customerqueueappbackend.contoller
 import hu.bme.customerqueueappbackend.dto.AdminDto
 import hu.bme.customerqueueappbackend.service.AdminService
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
@@ -20,6 +21,7 @@ class AdminController(
             = ResponseEntity.ok(adminService.getAdmin(id))
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('OWNER')")
     fun deleteAdmin(@PathVariable id: UUID): ResponseEntity<Unit> =
         ResponseEntity.ok(adminService.deleteAdmin(id))
 

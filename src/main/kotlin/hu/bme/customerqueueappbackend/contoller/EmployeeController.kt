@@ -3,6 +3,7 @@ package hu.bme.customerqueueappbackend.contoller
 import hu.bme.customerqueueappbackend.dto.EmployeeDto
 import hu.bme.customerqueueappbackend.service.EmployeeService
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import java.util.UUID
 
@@ -20,6 +21,7 @@ class EmployeeController(
             = ResponseEntity.ok(employeeService.getEmployee(id))
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') || hasRole('OWNER')")
     fun deleteEmployee(@PathVariable id: UUID): ResponseEntity<Unit> =
         ResponseEntity.ok(employeeService.deleteEmployee(id))
 

@@ -5,6 +5,7 @@ import hu.bme.customerqueueappbackend.dto.CustomerTicketDto
 import hu.bme.customerqueueappbackend.dto.request.CreateCustomerServiceRequest
 import hu.bme.customerqueueappbackend.service.CustomerServiceService
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import java.util.UUID
 
@@ -18,6 +19,7 @@ class CustomerServiceController(
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('OWNER')")
     fun saveCustomerService(@RequestBody createCustomerServiceRequest: CreateCustomerServiceRequest): ResponseEntity<CustomerServiceDto> =
         ResponseEntity.ok(customerServiceService.saveCustomerService(createCustomerServiceRequest))
 
@@ -26,6 +28,7 @@ class CustomerServiceController(
         = ResponseEntity.ok(customerServiceService.getCustomerService(id))
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('OWNER')")
     fun delete(@PathVariable id: UUID): ResponseEntity<Unit>
         = ResponseEntity.ok(customerServiceService.deleteCustomerService(id))
 
