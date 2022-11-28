@@ -5,6 +5,7 @@ import hu.bme.customerqueueappbackend.dto.UserDto
 import hu.bme.customerqueueappbackend.dto.request.LoginRequest
 import hu.bme.customerqueueappbackend.dto.request.RegisterUserRequest
 import hu.bme.customerqueueappbackend.repository.EmployeeRepository
+import hu.bme.customerqueueappbackend.repository.UserRepository
 import hu.bme.customerqueueappbackend.security.jwtutils.TokenManager
 import hu.bme.customerqueueappbackend.service.AuthService
 import hu.bme.customerqueueappbackend.service.WaitingTimeCalculationService
@@ -22,6 +23,7 @@ class AuthController (
     private val authenticationManager: AuthenticationManager,
     private val waitingTimeCalculationService: WaitingTimeCalculationService,
     private val employeeRepository: EmployeeRepository,
+    private val userRepository: UserRepository,
     private val tokenManager: TokenManager,
     private val authService: AuthService,
 ) {
@@ -34,15 +36,16 @@ class AuthController (
         return try {
             val loggedInUser = authenticationManager.authenticate(UsernamePasswordAuthenticationToken(loginRequest.email, loginRequest.password))
             val (tokenString, tokenExpirationDate) = tokenManager.generateJwtToken(loggedInUser.name, loggedInUser.authorities)
-            if (loggedInUser.authorities.isEmpty()) {
+            if (loggedInUser.authorities.isEmpty()) { //TODO: itt gondolom mivel adtam az employee-nak is role-t ezt majd át kell írni
                 val employee = employeeRepository.findByEmail(loggedInUser.name)!!
                 val maxHelpDeskNumber = employeeRepository.findFirstByCustomerServiceOrderByHelpDeskNumberDesc(employee.customerService).helpDeskNumber
                 employee.helpDeskNumber = maxHelpDeskNumber + 1
                 waitingTimeCalculationService.refreshCallTimesFor(employee.customerService)
             }
+            val user = userRepository.findFirstByEmail(loggedInUser.name) ?: throw EntityNotFoundException("User was not found")
             ResponseEntity.ok(
                 LoginResponseDto(
-                    email = loggedInUser.name,
+                    userId = user.id,
                     token = tokenString,
                     tokenValidity = tokenExpirationDate,
                     roles = loggedInUser.authorities.map { grantedAuthority -> grantedAuthority.authority }
