@@ -22,7 +22,7 @@ class CustomerServiceServiceImpl (
     private val employeeRepository: EmployeeRepository,
     private val adminRepository: AdminRepository,
     private val customerTicketRepository: CustomerTicketRepository,
-    private val serviceTypeRepository: ServiceTypeService,
+    private val serviceTypeRepository: ServiceTypeRepository,
     private val ownerRepository: OwnerRepository,
     private val waitingTimeCalculationService: WaitingTimeCalculationService,
     private val mapper: ModelMapper
@@ -79,14 +79,12 @@ class CustomerServiceServiceImpl (
             // delete related admins
             val admins = adminRepository.findByCustomerService(customerService)
             for (admin in admins) {
-                println(admin)
                 adminRepository.delete(admin)
             }
 
             // delete related service types
             for (serviceType in customerService.serviceTypes) {
-                println(serviceType)
-                serviceTypeRepository.deleteServiceType(serviceType.id)
+                serviceTypeRepository.delete(serviceType)
             }
 
             // delete the customer service itself

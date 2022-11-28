@@ -45,12 +45,6 @@ class CustomerTicketServiceImpl (
         )
     }
 
-    // if ticket is last        --> cannot delay, throw exception
-    // if ticket is first       --> cannot delay, throw exception
-    // if in between tickets    -->
-    //      has enough people behind to delay   --> success: delay with the least amount of time that is more than the specified
-    //      not enough people behind as specified  --> partial success: bring to last of list
-    // if ticket is changed inform all other tickets about the change Todo
     @Transactional
     override fun delayTicket(id: UUID, minutes: Int): CustomerTicketDto {
         val delayedTicket = findCustomerTicketById(id)
