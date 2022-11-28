@@ -20,7 +20,7 @@ class AdminController(
             = ResponseEntity.ok(adminService.getAdmin(id))
 
     @DeleteMapping("/{id}")
-    fun deleteEmployee(@PathVariable id: UUID): ResponseEntity<Unit> =
+    fun deleteAdmin(@PathVariable id: UUID): ResponseEntity<Unit> =
         ResponseEntity.ok(adminService.deleteAdmin(id))
 
 }
