@@ -6,6 +6,7 @@ import hu.bme.customerqueueappbackend.dto.request.LoginRequest
 import hu.bme.customerqueueappbackend.dto.request.RegisterUserRequest
 import hu.bme.customerqueueappbackend.repository.EmployeeRepository
 import hu.bme.customerqueueappbackend.repository.UserRepository
+import hu.bme.customerqueueappbackend.security.authorization.RoleService
 import hu.bme.customerqueueappbackend.security.jwtutils.TokenManager
 import hu.bme.customerqueueappbackend.service.AuthService
 import hu.bme.customerqueueappbackend.service.WaitingTimeCalculationService
@@ -26,6 +27,7 @@ class AuthController (
     private val userRepository: UserRepository,
     private val tokenManager: TokenManager,
     private val authService: AuthService,
+    private val roleService: RoleService
 ) {
     companion object {
         const val BASE_URL = "/api/auth"
@@ -36,7 +38,8 @@ class AuthController (
         return try {
             val loggedInUser = authenticationManager.authenticate(UsernamePasswordAuthenticationToken(loginRequest.email, loginRequest.password))
             val (tokenString, tokenExpirationDate) = tokenManager.generateJwtToken(loggedInUser.name, loggedInUser.authorities)
-            if (loggedInUser.authorities.isEmpty()) { //TODO: itt gondolom mivel adtam az employee-nak is role-t ezt majd át kell írni
+            val auth = roleService.employee.grantedAuthority
+            if (loggedInUser.authorities.contains(roleService.employee.grantedAuthority)) {
                 val employee = employeeRepository.findByEmail(loggedInUser.name)!!
                 val maxHelpDeskNumber = employeeRepository.findFirstByCustomerServiceOrderByHelpDeskNumberDesc(employee.customerService).helpDeskNumber
                 employee.helpDeskNumber = maxHelpDeskNumber + 1
