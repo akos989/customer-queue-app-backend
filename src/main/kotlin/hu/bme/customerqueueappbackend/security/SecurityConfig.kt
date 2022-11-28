@@ -49,11 +49,10 @@ class SecurityConfig(
     }
 
     override fun configure(http: HttpSecurity) {
-        val unAuthorized  = arrayOf("/api/**")
+        val unAuthorized  = arrayOf("/api/auth/**", "/api/tickets/**")
 
         http.csrf().disable()
-            .authorizeRequests().antMatchers("/api/auth/login").permitAll()
-            .antMatchers(*unAuthorized).permitAll()
+            .authorizeRequests().antMatchers(*unAuthorized).permitAll()
             .anyRequest().authenticated()
             .and()
             .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)

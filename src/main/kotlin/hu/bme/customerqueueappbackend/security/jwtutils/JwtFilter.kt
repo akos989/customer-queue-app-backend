@@ -54,13 +54,7 @@ class JwtFilter(
             "/customer-queue-app/h2-console/",
             "/customer-queue-app/swagger-ui/",
             "/customer-queue-app/v3/api-docs/"
-
-//            "/customer-queue-app/api/auth/logout"
-//          Todo: add more paths, e.g.: the paths the unauthenticated customer will use
-//          Todo: add these to a central static constants class
         )
         return excludedPaths.any { request.requestURI.startsWith(it) }
-//        request.requestURI.startsWith()
-//        return excludedPaths.contains(request.requestURI)
     }
 }
