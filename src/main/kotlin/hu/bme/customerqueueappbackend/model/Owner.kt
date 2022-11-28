@@ -11,5 +11,5 @@ class Owner(
     roles: MutableSet<Role> = hashSetOf(),
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
-    val customerServices: List<CustomerService> = listOf()
+    val customerServices: Set<CustomerService> = setOf()
 ): User(email = email, password = password, roles = roles)

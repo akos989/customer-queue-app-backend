@@ -16,18 +16,16 @@ class CustomerTicketController(
     }
 
     @PostMapping("/forServiceType/{serviceTypeId}")
-    fun createTicket(@PathVariable serviceTypeId: UUID): ResponseEntity<CustomerTicketDto> =
-        ResponseEntity.ok(customerTicketService.create(serviceTypeId))
+    fun createTicket(@PathVariable serviceTypeId: UUID): ResponseEntity<CustomerTicketDto>
+        = ResponseEntity.ok(customerTicketService.create(serviceTypeId))
 
     @PatchMapping("/{id}/delay")
-    fun delayTicket(@PathVariable id: UUID, @RequestParam minutes: Int): ResponseEntity<CustomerTicketDto> =
-        ResponseEntity.ok(customerTicketService.delayTicket(id, minutes))
+    fun delayTicket(@PathVariable id: UUID, @RequestParam minutes: Int): ResponseEntity<CustomerTicketDto>
+        = ResponseEntity.ok(customerTicketService.delayTicket(id, minutes))
 
     @DeleteMapping("/{id}")
-    fun deleteTicket(@PathVariable id: UUID): ResponseEntity<Unit> {
-        customerTicketService.deleteTicket(id)
-        return ResponseEntity.ok(Unit)
-    }
+    fun deleteTicket(@PathVariable id: UUID): ResponseEntity<Unit>
+        = ResponseEntity.ok(customerTicketService.deleteTicket(id))
 
     @GetMapping("/{id}")
     fun getTicket(@PathVariable id: UUID): ResponseEntity<CustomerTicketDto>

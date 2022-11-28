@@ -20,6 +20,9 @@ class CustomerTicket(
     var waitingPeopleNumber: Int = 0,
 
     @Column
+    var ticketNumber: Int = 0,
+
+    @Column
     var handleDesk: Int = 0,
 
     @OneToOne(fetch = FetchType.EAGER)

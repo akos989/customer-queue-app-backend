@@ -2,21 +2,17 @@ package hu.bme.customerqueueappbackend.service
 
 import hu.bme.customerqueueappbackend.dto.CustomerServiceDto
 import hu.bme.customerqueueappbackend.dto.CustomerTicketDto
-import hu.bme.customerqueueappbackend.dto.ServiceTypeDto
-import hu.bme.customerqueueappbackend.dto.request.CreateServiceTypeRequest
+import hu.bme.customerqueueappbackend.dto.UserDto
+import hu.bme.customerqueueappbackend.dto.request.CreateCustomerServiceRequest
 import hu.bme.customerqueueappbackend.model.CustomerService
-import hu.bme.customerqueueappbackend.model.CustomerTicket
 import hu.bme.customerqueueappbackend.model.Employee
-import hu.bme.customerqueueappbackend.model.ServiceType
-import hu.bme.customerqueueappbackend.repository.CustomerServiceRepository
-import hu.bme.customerqueueappbackend.repository.EmployeeRepository
-import hu.bme.customerqueueappbackend.repository.ServiceTypeRepository
+import hu.bme.customerqueueappbackend.repository.*
+import hu.bme.customerqueueappbackend.util.exceptions.BadRequestException
+import hu.bme.customerqueueappbackend.util.exceptions.EntityNotFoundException
 import hu.bme.customerqueueappbackend.util.extensions.toDto
 import org.modelmapper.ModelMapper
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.web.server.ResponseStatusException
 import java.util.*
 import javax.transaction.Transactional
 
@@ -24,11 +20,32 @@ import javax.transaction.Transactional
 class CustomerServiceServiceImpl (
     private val customerServiceRepository: CustomerServiceRepository,
     private val employeeRepository: EmployeeRepository,
+    private val adminRepository: AdminRepository,
+    private val customerTicketRepository: CustomerTicketRepository,
+    private val serviceTypeRepository: ServiceTypeService,
+    private val ownerRepository: OwnerRepository,
     private val waitingTimeCalculationService: WaitingTimeCalculationService,
     private val mapper: ModelMapper
 ): CustomerServiceService {
+    @Transactional
+    override fun saveCustomerService(createCustomerServiceRequest: CreateCustomerServiceRequest): CustomerServiceDto {
+        val owner = ownerRepository.findByIdOrNull(createCustomerServiceRequest.ownerId) ?: throw EntityNotFoundException("Owner not found")
+        val customerService = CustomerService(name = createCustomerServiceRequest.name, owner = owner)
+
+        customerServiceRepository.save(customerService)
+
+        return customerService.toDto(mapper)
+    }
+
     override fun getCustomerService(id: UUID): CustomerServiceDto {
         val customerService = findCustomerServiceById(id)
+        // Navigation properties of employees and admins were removed from CustomerService class. If you want to fetch the admin and employees belonging to a CustomerService use:
+        // EmployeeRepository.findByCustomerService() and AdminRepository.findByCustomerService()
+        val employeeEntities = employeeRepository.findByCustomerService(customerService)
+        val adminEntities = adminRepository.findByCustomerService(customerService)
+        val adminDtoList: List<UserDto> = adminEntities.toDto(mapper)
+        val employeeDtoList: List<UserDto> = employeeEntities.toDto(mapper)
+
         val customerServiceDto: CustomerServiceDto = customerService.toDto(mapper)
 
         val approximateCallTime = waitingTimeCalculationService.callTimeForNewCustomerTicket(customerService)
@@ -41,8 +58,42 @@ class CustomerServiceServiceImpl (
         customerServiceDto.run {
             waitingPeople = customerService.waitingTickets.count()
             waitingTime = approximateWaitingTime?.toInt()
+            admins = adminDtoList
+            employees = employeeDtoList
         }
         return customerServiceDto
+    }
+
+    @Transactional
+    override fun deleteCustomerService(id: UUID) {
+        val customerService = findCustomerServiceById(id)
+
+        if (customerTicketRepository.findFirstByCustomerService(customerService) == null) {
+            // delete related employees
+            val employees = employeeRepository.findByCustomerService(customerService)
+            for (employee in employees) {
+                println(employee)
+                employeeRepository.delete(employee)
+            }
+
+            // delete related admins
+            val admins = adminRepository.findByCustomerService(customerService)
+            for (admin in admins) {
+                println(admin)
+                adminRepository.delete(admin)
+            }
+
+            // delete related service types
+            for (serviceType in customerService.serviceTypes) {
+                println(serviceType)
+                serviceTypeRepository.deleteServiceType(serviceType.id)
+            }
+
+            // delete the customer service itself
+            customerServiceRepository.delete(customerService)
+        } else {
+            throw BadRequestException("At least one ticket has not been completed in this customer service")
+        }
     }
 
     @Transactional
@@ -51,8 +102,9 @@ class CustomerServiceServiceImpl (
         val nextTicket = customerService.waitingTickets
             .filter { it.handleStartTimeStamp == null }
             .minByOrNull { it.waitingPeopleNumber }
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "No next ticket")
-        val employeeDeskNumber = findEmployeeById(employeeId).helpDeskNumber
+            ?: throw BadRequestException("There is no next ticket")
+        val employee = findEmployeeById(employeeId)
+        val employeeDeskNumber = employee.helpDeskNumber
         nextTicket.handleStartTimeStamp = Date()
         nextTicket.callTime = Date()
         nextTicket.handleDesk = employeeDeskNumber
@@ -61,10 +113,10 @@ class CustomerServiceServiceImpl (
 
     private fun findCustomerServiceById(id: UUID): CustomerService
         = customerServiceRepository.findByIdOrNull(id)
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Customer Service not found")
+            ?: throw EntityNotFoundException("Customer Service not found")
 
     private fun findEmployeeById(id: UUID): Employee
         = employeeRepository.findByIdOrNull(id)
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found")
+            ?: throw EntityNotFoundException("Employee not found")
 
 }
