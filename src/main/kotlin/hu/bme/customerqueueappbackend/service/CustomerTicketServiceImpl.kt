@@ -7,6 +7,8 @@ import hu.bme.customerqueueappbackend.repository.CustomerTicketRepository
 import hu.bme.customerqueueappbackend.repository.ServiceTypeRepository
 import hu.bme.customerqueueappbackend.util.exceptions.CannotDelayTicketException
 import hu.bme.customerqueueappbackend.util.exceptions.EntityNotFoundException
+import hu.bme.customerqueueappbackend.util.extensions.toDto
+import org.modelmapper.ModelMapper
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.*
@@ -17,7 +19,8 @@ import kotlin.math.absoluteValue
 class CustomerTicketServiceImpl (
     private val customerTicketRepository: CustomerTicketRepository,
     private val serviceTypeRepository: ServiceTypeRepository,
-    private val waitingTimeCalculationService: WaitingTimeCalculationService
+    private val waitingTimeCalculationService: WaitingTimeCalculationService,
+    private val mapper: ModelMapper
 ): CustomerTicketService {
     companion object {
        const val HANDLE_TIME_CONSTANT = 10
@@ -93,6 +96,14 @@ class CustomerTicketServiceImpl (
         customerTicketRepository.deleteById(id)
 
        waitingTimeCalculationService.refreshCallTimesAfterDelete(ticketCustomerService, deleteTicket.id)
+    }
+
+    override fun getTicket(id: UUID): CustomerTicketDto {
+        val ticket = findCustomerTicketById(id)
+        val ticketDto: CustomerTicketDto = ticket.toDto(mapper)
+        return ticketDto.apply {
+            serviceTypeName = ticket.serviceType.name
+        }
     }
 
     private fun findCustomerTicketById(id: UUID): CustomerTicket

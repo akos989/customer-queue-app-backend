@@ -28,4 +28,8 @@ class CustomerTicketController(
         customerTicketService.deleteTicket(id)
         return ResponseEntity.ok(Unit)
     }
+
+    @GetMapping("/{id}")
+    fun getTicket(@PathVariable id: UUID): ResponseEntity<CustomerTicketDto>
+        = ResponseEntity.ok(customerTicketService.getTicket(id))
 }

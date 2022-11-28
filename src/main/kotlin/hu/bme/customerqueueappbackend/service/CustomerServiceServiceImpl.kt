@@ -24,14 +24,23 @@ import javax.transaction.Transactional
 class CustomerServiceServiceImpl (
     private val customerServiceRepository: CustomerServiceRepository,
     private val employeeRepository: EmployeeRepository,
+    private val waitingTimeCalculationService: WaitingTimeCalculationService,
     private val mapper: ModelMapper
 ): CustomerServiceService {
     override fun getCustomerService(id: UUID): CustomerServiceDto {
         val customerService = findCustomerServiceById(id)
         val customerServiceDto: CustomerServiceDto = customerService.toDto(mapper)
+
+        val approximateCallTime = waitingTimeCalculationService.callTimeForNewCustomerTicket(customerService)
+        val approximateWaitingTime = if (approximateCallTime == null) {
+            null
+        } else {
+            (approximateCallTime.time - Date().time) / (1000 * 60)
+        }
+
         customerServiceDto.run {
             waitingPeople = customerService.waitingTickets.count()
-            waitingTime = customerService.waitingTickets.sumOf { it.serviceType.handleTime }
+            waitingTime = approximateWaitingTime?.toInt()
         }
         return customerServiceDto
     }
@@ -45,6 +54,7 @@ class CustomerServiceServiceImpl (
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "No next ticket")
         val employeeDeskNumber = findEmployeeById(employeeId).helpDeskNumber
         nextTicket.handleStartTimeStamp = Date()
+        nextTicket.callTime = Date()
         nextTicket.handleDesk = employeeDeskNumber
         return nextTicket.toDto(mapper)
     }

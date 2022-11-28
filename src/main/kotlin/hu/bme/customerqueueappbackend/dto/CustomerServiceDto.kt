@@ -6,6 +6,6 @@ class CustomerServiceDto(
     val id: UUID = UUID.randomUUID(),
     val name: String = "",
     val serviceTypes: List<ServiceTypeDto> = listOf(),
-    var waitingTime: Int = 0,
+    var waitingTime: Int? = null,
     var waitingPeople: Int = 0
 )
