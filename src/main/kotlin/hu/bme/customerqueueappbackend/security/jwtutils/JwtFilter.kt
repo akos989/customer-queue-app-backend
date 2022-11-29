@@ -51,6 +51,7 @@ class JwtFilter(
     override fun shouldNotFilter(request: HttpServletRequest): Boolean {
         val excludedPaths: List<String> = listOf(
             "/customer-queue-app/api/auth",
+            "/customer-queue-app/api/tickets",
             "/customer-queue-app/h2-console/",
             "/customer-queue-app/swagger-ui/",
             "/customer-queue-app/v3/api-docs/"
